@@ -5,6 +5,7 @@ const server = express();
 
 configureMiddleware(server);
 
+// fisher-yates shuffle algorithm
 const shuffle = originalArray => {
   const array = originalArray.slice(0);
 
@@ -23,15 +24,15 @@ server.get('/shuffle', (req, res) => {
     deck = []
   }
   const suits = ['s', 'd', 'h', 'c'];
-  const ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
+  const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   for (let i = 0; i < ranks.length; i++) {
     for (let j = 0; j < suits.length; j++) {
-      deck.push(`${ranks[i]} ${suits[j]}`)
+      deck.push(`${ranks[i]}${suits[j]}`)
     }
   }
   deck = shuffle(deck)
 
-  res.status(200).json({ deck })
+  res.status(200).json({ message: 'Deck has been shuffled.'})
 })
 
 server.get('/deal-three', (req, res) => {
