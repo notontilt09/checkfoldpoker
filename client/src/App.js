@@ -14,20 +14,10 @@ const App = () => {
   const [p2mid, setp2mid] = useState([]);
   const [p2top, setp2top] = useState([]);
   const [p2discards, setp2discards] = useState([]);
-
-
-  // get deck from backend on mount
-  useEffect(() => {
-    axios.get('http://localhost:5000/shuffle')
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err))
-  }, [])
-
-
+  
   return (
-    <div className="App">
-    </div>
-  );
+    <div>placeholder</div>
+  )
 }
 
 export default App;

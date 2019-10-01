@@ -32,13 +32,19 @@ server.get('/shuffle', (req, res) => {
   }
   deck = shuffle(deck)
 
-  res.status(200).json({ message: 'Deck has been shuffled.'})
+  res.status(200).json(deck)
 })
 
 server.get('/deal-three', (req, res) => {
   let cards = deck.slice(0,3);
   deck = deck.slice(3);
-  res.status(200).json({ cards })
+  res.status(200).json({ cards });
+})
+
+server.get('/deal-five', (req, res) => {
+  let cards = deck.slice(0, 5);
+  deck = deck.slice(5);
+  res.status(200).json({ cards });
 })
 
 module.exports = server;

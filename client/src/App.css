@@ -31,3 +31,9 @@
     transform: rotate(360deg);
   }
 }
+
+.card {
+  width: 50px;
+  height: 100px;
+  margin: 30px;
+}
