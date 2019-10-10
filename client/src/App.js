@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 
 import images from './assets/images.js';
-import club from './assets/PNG-cards-1.3/2_of_clubs.png'
+
 
 const App = () => {
   const [p1bottom, setp1bottom] = useState([]);
