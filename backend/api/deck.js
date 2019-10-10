@@ -13,6 +13,23 @@ class Deck {
 
   shuffle() {
     this.deck = shuffleArray(this.deck);
+    
+    return this.deck
+  }
+
+  deal(numCards) {
+    // array of cards to be returned
+    const cards = [];
+
+    // push numCards # of cards onto the cards array
+    for (let i = 0; i < numCards; i++) {
+      cards.push(this.deck[i])
+    }
+
+    // update the deck with those dealt cards removed
+    this.deck = this.deck.slice(numCards)
+
+    return cards
   }
 }
 
