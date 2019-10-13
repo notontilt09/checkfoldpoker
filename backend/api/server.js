@@ -10,6 +10,10 @@ configureMiddleware(server);
 let deck;
 let players = [];
 
+server.get('/', (req, res) => {
+  res.send('Hello');
+})
+
 server.post('/join-game', (req, res) => {
   const { name } = req.body;
 
@@ -65,9 +69,12 @@ server.get('/deal-five', (req, res) => {
 
 // post endpoint to update a players board
 server.post('/set-cards', (req, res) => {
+  // grab playerName and entire top/mid/bottom from the request.  Request must send the whole board info, not just the last played cards
   const { playerName, top, middle, bottom } = req.body;
 
+  // find the player in the list of players at the table
   const playerToUpdate = players.find(player => player.name === playerName);
+
   if (playerToUpdate) {
     playerToUpdate.top = top;
     playerToUpdate.middle = middle;

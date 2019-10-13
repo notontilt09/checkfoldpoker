@@ -14,9 +14,44 @@ const App = () => {
   const [p2mid, setp2mid] = useState([]);
   const [p2top, setp2top] = useState([]);
   const [p2discards, setp2discards] = useState([]);
+  const [ws, setWs] = useState(new WebSocket('ws://localhost:3030'));
+
+  const [test, setTest] = useState([]);
+
+  ws.onopen = () => {
+    console.log('connected');
+  }
+
+  ws.onmessage = e => {
+    console.log(e.data);
+    // TODO: do something with the data...
+  }
+
+  ws.onclose = () => {
+    console.log('disconnected');
+    setWs(new WebSocket('ws://localhost:3030'));
+  }
+
+  const handleChanges = e => {
+    setTest(e.target.value);
+  }
+
+  const submitForm = e => {
+    e.preventDefault();
+    ws.send(test);
+  }
   
+  // const newWindow = () => {
+  //   // window.open with these params to open a new window with /table url
+  //   window.open('/table', '_blank', 'toolbar=0,location=0,menubar=0,height=500,width=800');
+  // }
+
   return (
-    <div>placeholder</div>
+    // <div onClick={newWindow}>new window</div>
+    <form>
+      <input type="text" value={test} onChange={handleChanges} />
+      <button onClick={submitForm}>Submit</button>
+    </form>
   )
 }
 
