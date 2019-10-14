@@ -2,7 +2,7 @@ class Player {
   constructor(name) {
     this.name = name
     this.top = [null, null, null];
-    this.middle = [null, null, null];
+    this.middle = [null, null, null, null, null];
     this.bottom = [null, null, null, null, null];
     this.discards = [null, null, null, null]
     this.fantasy = false;

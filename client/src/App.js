@@ -7,7 +7,7 @@ import PlayerBoard from './components/Boards/PlayerBoard.js';
 import ActionButtons from './components/ActionButtons.js';
 import Seat from './components/Seat/Seat.js';
 
-const emptyBoard = [[null, null, null], [null, null, null], [null, null, null, null, null]];
+const emptyBoard = [[null, null , null], [null, null, null, null , null], [null, null, null, null, null]];
 const initialSeats = [
   {
     seatId: 1,

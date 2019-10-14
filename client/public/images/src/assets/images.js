@@ -54,5 +54,4 @@ const images = [
   {id: 53, src: '/images/Yellow_back.jpg', title: 'back'},
 ]
 
-
 export default images
