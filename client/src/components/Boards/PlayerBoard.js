@@ -8,17 +8,17 @@ const PlayerBoard = props => {
     <div className="board">
       <div className="top">
         {props.board[0].map(card => (
-          <Card key={Math.random()} card={card}/>
+          <Card key={card ? card.value : Math.random()} card={card}/>
         ))}
       </div>
       <div className="middle">
         {props.board[1].map(card => (
-          <Card key={Math.random()} card={card}/>
+          <Card key={card ? card.value : Math.random()} card={card}/>
         ))}
       </div>
       <div className="bottom">
         {props.board[2].map(card => (
-          <Card key={Math.random()} card={card}/>
+          <Card key={card ? card.value : Math.random()} card={card}/>
         ))}
       </div>
     </div>

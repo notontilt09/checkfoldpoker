@@ -21,7 +21,9 @@ const Seat = props => {
       }
       {!props.player &&
         // seat is empty
-        <div className='seat-open' onClick={sitDown}>Seat Open</div>
+        <div className='seat-open' onClick={sitDown}>
+          <h4>Seat Open</h4>
+        </div>
       }
     </div>
   )
