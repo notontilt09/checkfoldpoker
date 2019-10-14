@@ -5,11 +5,16 @@
 .seat-open {
   border: 2px solid gray;
   border-radius: 50%;
+  background: rgb(41, 39, 39);
+  color: white;
   padding: 20%;
-  text-align: center;
   cursor: pointer;
   width: 20%;
   margin: 0 auto;
+  font-size: 2.5rem;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
 .player-info {
@@ -28,17 +33,17 @@
 .player-name {
   text-align: center;
   width: 100%;
-  padding: 8px;
+  padding: 8px 0;
   border-bottom: 1px solid white;
   color: white;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 .player-bank {
   color: #64dc64;
   font-weight: bold;
-  font-size: 1.2rem;
-  padding: 5px;
+  font-size: 1.8rem;
+  padding: 8px 0;
   
 }

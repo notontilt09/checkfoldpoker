@@ -4,7 +4,6 @@ import './App.css';
 
 import images from './assets/images.js';
 import PlayerBoard from './components/Boards/PlayerBoard.js';
-import OpponentBoard from './components/Boards/OpponentBoard.js';
 import ActionButtons from './components/ActionButtons.js';
 import Seat from './components/Seat/Seat.js';
 
@@ -93,7 +92,7 @@ const App = () => {
             sitHere={sitHere}
             seated={seated}
           />
-          <PlayerBoard />
+          <PlayerBoard board={emptyBoard}/>
         </div>
       ))}
       {myTurn && <ActionButtons />}

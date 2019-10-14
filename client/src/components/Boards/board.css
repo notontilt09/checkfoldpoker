@@ -1,0 +1,8 @@
+.top, .middle, .bottom {
+  display: flex;
+  justify-content: center;
+}
+
+.top {
+  margin-top: 50px;
+}
