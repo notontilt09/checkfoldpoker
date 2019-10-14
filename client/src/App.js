@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 import axios from 'axios';
 import './App.css';
 
@@ -6,16 +6,8 @@ import images from './assets/images.js';
 
 
 const App = () => {
-  const [p1bottom, setp1bottom] = useState([]);
-  const [p1mid, setp1mid] = useState([]);
-  const [p1top, setp1top] = useState([]);
-  const [p1discards, setp1discards] = useState([]);
-  const [p2bottom, setp2bottom] = useState([]);
-  const [p2mid, setp2mid] = useState([]);
-  const [p2top, setp2top] = useState([]);
-  const [p2discards, setp2discards] = useState([]);
+  console.log(images);
   const [ws, setWs] = useState(new WebSocket('ws://localhost:3030'));
-
   const [test, setTest] = useState([]);
 
   ws.onopen = () => {

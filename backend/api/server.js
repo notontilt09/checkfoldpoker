@@ -1,7 +1,8 @@
 const express = require('express');
 const configureMiddleware = require('./middleware.js');
-const Player = require('./player.js');
-const Deck = require('./deck.js');
+const Player = require('../utils/player.js');
+const Deck = require('../utils/deck.js');
+const Hand = require('../utils/Hand.js');
 
 const server = express();
 
@@ -9,6 +10,11 @@ configureMiddleware(server);
 
 let deck;
 let players = [];
+
+server.get('/hand', (req, res) => {
+  const hand = new Hand(2, 'pineapple_high', ['Dan', 'Matt'])
+  res.status(200).json(hand);
+})
 
 server.get('/', (req, res) => {
   res.send('Hello');
