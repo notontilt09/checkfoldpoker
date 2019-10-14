@@ -1,7 +1,6 @@
 import React from 'react';
 
 const PlayerBoard = props => {
-  console.log(props);
   return (
     <div className="board">
       <div className="top"></div>
