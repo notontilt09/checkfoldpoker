@@ -1,0 +1,7 @@
+.seat-open {
+  border: 2px solid gray;
+  border-radius: 50%;
+  padding: 20%;
+  text-align: center;
+  cursor: pointer;
+}
