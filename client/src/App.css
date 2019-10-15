@@ -1,6 +1,7 @@
 .table {
   display: flex;
-  margin-top: 50px;
+  margin: 50px auto;
+  justify-content: center;
 }
 
 .player-area {

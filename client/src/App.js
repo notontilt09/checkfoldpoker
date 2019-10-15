@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import Loader from 'react-loader-spinner'
 // import axios from 'axios';
 import './App.css';
 
@@ -81,24 +82,32 @@ const App = () => {
 
   const standUp = seatNumber => {
     console.log(`standing up from seat ${seatNumber}`)
-    setSeats(seats.map(seat => {
-      if (seat.seatId === seatNumber) {
-        return {
-          ...seat,
-          name: null,
-          filled: false
+    if (window.confirm('Are you sure you want to leave?')) {
+      setSeats(seats.map(seat => {
+        if (seat.seatId === seatNumber) {
+          return {
+            ...seat,
+            name: null,
+            filled: false
+          }
+        } else {
+          return seat
         }
-      } else {
-        return seat
-      }
-    }))
-    setSeated(false);
-    setNumFilledSeats(numFilledSeats - 1);
+      }))
+      setSeated(false);
+      setNumFilledSeats(numFilledSeats - 1);
+    }
   }
 
   return (
     <div className='table'>
-      {seats.map(seat => (
+      {ws.readyState === 0 &&
+        <Loader 
+          type="TailSpin" 
+          color="gray" 
+        />
+      }
+      {ws.readyState === 1 && seats.map(seat => (
         <div key={seat.seatId} className="player-area">
           <Seat
             seat={seat}
