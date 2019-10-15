@@ -8,7 +8,6 @@ import PlayerBoard from './components/Boards/PlayerBoard.js';
 import ActionButtons from './components/ActionButtons.js';
 import Seat from './components/Seat/Seat.js';
 
-const emptyBoard = [[null, null , null], [null, null, null, null , null], [null, null, null, null, null]];
 const initialSeats = [
   {
     seatId: 1,
@@ -18,7 +17,8 @@ const initialSeats = [
     top: [null, null, null],
     middle: [null, null, null, null, null],
     bottom: [null, null, null, null, null],
-    discards: []
+    discards: [],
+    hasButton: false
   },
   {
     seatId: 2,
@@ -28,7 +28,8 @@ const initialSeats = [
     top: [null, null, null],
     middle: [null, null, null, null, null],
     bottom: [null, null, null, null, null],
-    discards: []
+    discards: [],
+    hasButton: false
   },
 ]
 
