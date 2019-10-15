@@ -17,10 +17,10 @@ const Seat = props => {
         <div className='player-info'>
           <h4 className='player-name'>{props.seat.name}</h4>
           <h4 className='player-bank'>{props.seat.bank}</h4>
-          {props.seat.name === props.username &&
-            <button onClick={() => props.standUp(props.seat.seatId)}>Leave Table</button>
-          }
         </div>
+      }
+      {props.seat.name && props.seat.name === props.username &&
+        <button className="leave" onClick={() => props.standUp(props.seat.seatId)}>Leave Table</button>
       }
       {!props.seat.filled &&
         // seat is empty
