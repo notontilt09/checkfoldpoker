@@ -1,8 +1,8 @@
 import React, { useState, useEffect} from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import './App.css';
 
-import images from './assets/images.js';
+// import images from './assets/images.js';
 import PlayerBoard from './components/Boards/PlayerBoard.js';
 import ActionButtons from './components/ActionButtons.js';
 import Seat from './components/Seat/Seat.js';
@@ -35,38 +35,40 @@ const App = () => {
   const [seats, setSeats] = useState(initialSeats);
   // boolean to kep track if we've already taken a seat
   const [seated, setSeated] = useState(false);
+  const [numFilledSeats, setNumFilledSeats] = useState(0);
+  const [username, setUsername] = useState(null);
 
   ws.onopen = () => {
     console.log('connected');
+    console.log(ws.readyState);
   }
 
   ws.onmessage = e => {
-    console.log(e.data);
-    // TODO: do something with the data...
+    const seatArray = JSON.parse(e.data);
+    console.log('sa', seatArray);
+    setSeats(seatArray);
   }
 
   ws.onclose = () => {
     // try to reconnect the websocket if it gets disconnected
-    console.log('disconnected');
+    console.log('disconnected, attempting to reconnect');
     setWs(new WebSocket('ws://localhost:3030'));
   }
 
-  const handleChanges = e => {
-    setMyBoard(e.target.value);
-  }
-
-  // const submitForm = e => {
-  //   e.preventDefault();
-  //   ws.send(myBoard);
-  // }
+  useEffect(() => {
+    if (ws.readyState === 1) {
+      ws.send(JSON.stringify(seats));
+    }
+  }, [numFilledSeats])
 
   const sitHere = seatNumber => {
     const me = window.prompt('What is your name?');
+    setUsername(me);
     setSeats(seats.map(seat => {
       if (seat.seatId === seatNumber) {
         return {
           ...seat,
-          player: me,
+          name: me,
           filled: true
         }
       } else {
@@ -74,23 +76,36 @@ const App = () => {
       }
     }));
     setSeated(true);
+    setNumFilledSeats(numFilledSeats + 1);
   }
-  
-  // const newWindow = () => {
-  //   // window.open with these params to open a new window with /table url
-  //   window.open('/table', '_blank', 'toolbar=0,location=0,menubar=0,height=500,width=800');
-  // }
+
+  const standUp = seatNumber => {
+    console.log(`standing up from seat ${seatNumber}`)
+    setSeats(seats.map(seat => {
+      if (seat.seatId === seatNumber) {
+        return {
+          ...seat,
+          name: null,
+          filled: false
+        }
+      } else {
+        return seat
+      }
+    }))
+    setSeated(false);
+    setNumFilledSeats(numFilledSeats - 1);
+  }
 
   return (
     <div className='table'>
       {seats.map(seat => (
         <div key={seat.seatId} className="player-area">
           <Seat
-            seatNumber={seat.seatId}
-            player={seat.player}
-            bank={seat.bank}
+            seat={seat}
             sitHere={sitHere}
             seated={seated}
+            standUp={standUp}
+            username={username}
           />
           <PlayerBoard board={emptyBoard}/>
         </div>

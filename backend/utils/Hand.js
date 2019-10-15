@@ -2,11 +2,12 @@ const Deck = require('./deck.js');
 const Player = require('./player.js');
 
 class Hand {
-  constructor(numPlayers=2, gameType='pinapple_high', players) {
+  constructor(numPlayers=2, players) {
     this.numPlayers = numPlayers;
-    this.gameType = gameType
+
     const unshuffled = new Deck()
     this.deck = unshuffled.shuffle();
+
     this.players = players.map(player => new Player(player));
   }
 
