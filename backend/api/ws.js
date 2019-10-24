@@ -2,6 +2,7 @@ const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 3030 });
 
 const Table = require('../utils/table.js');
+
 const table = new Table()
 
 wss.on('connection', function connection(ws) {
@@ -10,7 +11,7 @@ wss.on('connection', function connection(ws) {
   // on each incoming message from any client, do the following
   ws.on('message', function incoming(data) {
     const dataObj = JSON.parse(data);
-    // switch statement to handle different types of messages (seat update, hand update)
+    // switch statement to handle different types of messages (seat update, hand update, join/leave table)
     switch (dataObj.type) {
       // update the table's seat config
       case 'seat':
@@ -27,6 +28,7 @@ wss.on('connection', function connection(ws) {
         if (table.filledSeats > 1) {
           console.log('start the game here');
           table.dealHand();
+          console.log(table);
 
         }
         break;

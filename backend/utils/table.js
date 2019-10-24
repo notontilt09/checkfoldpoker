@@ -1,7 +1,11 @@
 const Seat = require('./seat.js');
 
+let tableId = 1;
+
 class Table {
   constructor(gameType='pineapple_high', numSeats=2) {
+    this.id = tableId;
+    tableId++;
     this.gameType = gameType;
     this.numSeats = numSeats;
     // * start button in null seat, randomize for first hand, and move appropriately for all subsequent hands
