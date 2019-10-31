@@ -1,8 +1,12 @@
 const Deck = require('./deck.js');
 const Player = require('./player.js');
 
+let handId = 1;
+
 class Hand {
   constructor(numPlayers=2, players) {
+    this.handId = handId;
+    handId++;
     this.numPlayers = numPlayers;
 
     const unshuffled = new Deck()
