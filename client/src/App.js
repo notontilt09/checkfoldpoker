@@ -125,9 +125,9 @@ const App = () => {
       {/* if websocket in ready state show table */}
       {ws.readyState === 1 && seats.map(seat => (
         <div key={seat.seatId} className="player-area">
-          <Seat
-            seat={seat}
-            sitHere={sitHere}
+          <Seat 
+            seat={seat} 
+            sitHere={sitHere} 
             seated={seated}
             standUp={standUp}
             username={username}
