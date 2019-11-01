@@ -15,7 +15,7 @@ class Table {
     // fill the seat array with as many empty seat objects as necessary
     for (let i = 0; i < numSeats; i++) {
       this.seatArray.push(new Seat(i+1))
-      console.log(this.seatArray);
+      // console.log(this.seatArray);
     }
   }
 
