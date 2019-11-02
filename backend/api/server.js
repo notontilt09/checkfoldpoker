@@ -10,6 +10,4 @@ const server = express();
 configureMiddleware(server);
 server.use('/api/auth', authRouter);
 
-
-
 module.exports = server;

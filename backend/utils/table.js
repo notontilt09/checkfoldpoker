@@ -3,7 +3,7 @@ const Seat = require('./seat.js');
 let tableId = 1;
 
 class Table {
-  constructor(gameType='pineapple_high', numSeats=2) {
+  constructor(gameType = 'pineapple_high', numSeats = 2) {
     this.id = tableId;
     tableId++;
     this.gameType = gameType;
@@ -11,10 +11,10 @@ class Table {
     // * start button in null seat, randomize for first hand, and move appropriately for all subsequent hands
     this.button = null;
     this.filledSeats = 0;
-    this.seatArray = []
+    this.seatArray = [];
     // fill the seat array with as many empty seat objects as necessary
     for (let i = 0; i < numSeats; i++) {
-      this.seatArray.push(new Seat(i+1))
+      this.seatArray.push(new Seat(i + 1));
       // console.log(this.seatArray);
     }
   }
@@ -28,11 +28,11 @@ class Table {
   // keeps track of how many seats are filled to determine if a hand should be dealt
   updateFilledSeats() {
     let filled = 0;
-    this.seatArray.forEach(seat => {
+    this.seatArray.forEach((seat) => {
       if (seat.filled) {
         filled++;
       }
-    })
+    });
     this.filledSeats = filled;
   }
 
@@ -41,7 +41,7 @@ class Table {
     // randomizing button in 2 seat game for 1st hand
     if (this.numSeats === 2) {
       const rand = Math.random();
-      console.log(1/3);
+      console.log(1 / 3);
       if (rand < 0.5) {
         this.button = 1;
       } else {
@@ -50,9 +50,9 @@ class Table {
       // randomizing button in 3 seat game for first hand
     } else if (this.numSeats === 3) {
       const rand = Math.random();
-      if (rand < 1/3) {
+      if (rand < 1 / 3) {
         this.button = 1;
-      } else if (rand < 2/3) {
+      } else if (rand < 2 / 3) {
         this.button = 2;
       } else {
         this.button = 3;
@@ -63,7 +63,7 @@ class Table {
   // move the button after a hand is completed
   moveButton() {
     if (this.button === this.numSeats) {
-      this.button = 1
+      this.button = 1;
     } else {
       this.button++;
     }
@@ -74,7 +74,7 @@ class Table {
   dealHand() {
     // move the button to the correct seat
     if (!this.button) {
-      this.setInitialButton()
+      this.setInitialButton();
     } else {
       this.moveButton();
     }
