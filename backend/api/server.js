@@ -2,12 +2,18 @@ const express = require('express');
 const configureMiddleware = require('./middleware.js');
 const authRouter = require('../auth/authRouter.js');
 const mongo = require('../db/db.js');
+const socketIO = require('socket.io');
+const http = require('http');
 
 mongo.connect();
 
-const server = express();
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 
-configureMiddleware(server);
-server.use('/api/auth', authRouter);
+configureMiddleware(app);
 
-module.exports = server;
+// route handlers
+app.use('/api/auth', authRouter);
+
+module.exports = {app, io};
