@@ -1,17 +1,19 @@
+// eslint-disable-next-line new-cap
 const router = require('express').Router();
 const tokenService = require('./tokenService.js');
 const bcrypt = require('bcryptjs');
 const mongo = require('../db/db.js');
 
 router.post('/register', async (req, res) => {
-  let user = req.body;
+  console.log(req.body);
+  const user = req.body;
   // validate input to contain username > 3 chars and password > 8 chars.  Front-end validation as well to make sure passwords match and are strong enough.
-  if (!user.username || !user.password) {
-    res.status(404).json({message: 'Username and password required.'});
-  } else if (user.username.length < 3) {
-    res.status(404).json({message: 'Username must be at least 3 characters.'});
+  if (!user.userName || !user.password) {
+    res.status(400).json({message: 'Username and password required.'});
+  } else if (user.userName.length < 3) {
+    res.status(400).json({message: 'Username must be at least 3 characters.'});
   } else if (user.password.length < 8) {
-    res.status(404).json({message: 'Password must be at least 8 characters.'});
+    res.status(400).json({message: 'Password must be at least 8 characters.'});
   } else {
     // generate hash from users's pw
     const hash = bcrypt.hashSync(user.password, 8);
@@ -24,10 +26,10 @@ router.post('/register', async (req, res) => {
       const db = mongo.getDB();
       const users = db.collection('users');
       // check to make sure user isn't already in the db, before adding
-      const existingUser = await users.findOne({username: user.username});
+      const existingUser = await users.findOne({username: user.userName});
       // if username exists, return 400 and corresponding message
       if (existingUser) {
-        res.status(400).json({error: `user ${user.username} already exists.`});
+        res.status(400).json({error: `user ${user.userName} already exists.`});
         // otherwise add the user to the db
       } else {
         await users.insertOne(user);
@@ -41,17 +43,17 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  let {username, password} = req.body;
+  const {userName, password} = req.body;
 
   try {
     const db = mongo.getDB();
     const users = db.collection('users');
-    const user = await users.findOne({username: username});
+    const user = await users.findOne({userName: userName});
 
     if (user && bcrypt.compareSync(password, user.password)) {
       const token = tokenService.generateToken(user);
       res.status(200).json({
-        message: `Welcome ${user.username}!`,
+        message: `Welcome ${user.userName}!`,
         token,
       });
     } else {
