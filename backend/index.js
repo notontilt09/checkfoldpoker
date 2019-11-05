@@ -1,8 +1,6 @@
 require('dotenv').config();
-// const socketIO = require('socket.io');
-import socketIO from 'socket.io';
-import http from 'http';
-
+const socketIO = require('socket.io');
+const http = require('http');
 const app = require('./api/server');
 const server = http.createServer(app);
 const io = socketIO(server);
