@@ -12,6 +12,7 @@ configureMiddleware(server);
 
 server.get('/', (req, res) => {
   console.log('welcome');
+  res.send('welcome');
 });
 
 // route handlers
