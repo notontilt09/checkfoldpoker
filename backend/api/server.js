@@ -1,6 +1,7 @@
 const express = require('express');
 const configureMiddleware = require('./middleware.js');
 const authRouter = require('../auth/authRouter.js');
+const tablesRouter = require('../tables/tablesRouter.js');
 const mongo = require('../db/db.js');
 
 // connect server to database
@@ -17,5 +18,6 @@ server.get('/', (req, res) => {
 
 // route handlers
 server.use('/api/auth', authRouter);
+server.use('/api/tables', tablesRouter);
 
 module.exports = server;

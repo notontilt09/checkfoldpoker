@@ -32,8 +32,11 @@ router.post('/register', async (req, res) => {
         res.status(400).json({error: `user ${username} already exists.`});
         // otherwise add the user to the db
       } else {
+        // mongo method to add user
         await users.insertOne({username, password});
+        // grab that user from the db
         const user = await users.findOne({username: username})
+        // generate a jwt token and send along with response
         const token = tokenService.generateToken(user);
         res.status(201).json({
           message: `Successfully registered user ${username}`,

@@ -21,7 +21,7 @@ function App(props) {
     <AuthContext.Provider value={{authTokens, setAuthTokens: setTokens}}>
       <BrowserRouter>
         <Route exact path="/" component={Login} />
-        <PrivateRoute path="/lobby" component={Lobby} />
+        <Route path="/lobby" component={Lobby} />
         <PrivateRoute path="/admin" component={Admin} />
       </BrowserRouter>
     </AuthContext.Provider>

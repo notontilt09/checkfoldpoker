@@ -1,7 +1,47 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
+
+import TableListItem from '../components/TableList/TableListItem';
+
+import '../styles/lobby.css';
 
 const Lobby = () => {
-  return <h1>Lobby</h1>;
+  const [tableInfo, setTableInfo] = useState([]);
+  const [selectedTable, setSelectedTable] = useState(null);
+
+  // load all the table info from server on mount
+  useEffect(() => {
+    axios
+      .get('http://localhost:5000/api/tables/')
+      .then(res => {
+        setTableInfo(res.data);
+      })
+      .catch(err => console.log(err));
+  }, [])
+
+  return (
+    tableInfo.length > 0 ?
+      <table className="tables-list">
+        <tbody>
+          <tr>
+            <th>Table</th>
+            <th>Stakes</th>
+            <th>Game Type</th>
+            <th>Players</th>
+          </tr>
+          {tableInfo.map(table => (
+            <tr 
+              onClick={() => setSelectedTable(table._id)}
+              className={selectedTable === table._id ? "active table-list-item" : "table-list-item"}
+              key={table._id}
+            >
+              <TableListItem selectedTable={selectedTable} table={table} />
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      : <h3>Getting Table Information</h3>
+  );
 };
 
 export default Lobby;

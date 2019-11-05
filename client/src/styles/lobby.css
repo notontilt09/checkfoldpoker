@@ -1,0 +1,22 @@
+
+.tables-list {
+  width: 70%;
+}
+
+td, th {
+  border: 1px solid #515050;
+  text-align: center;
+  padding: 8px;
+}
+
+td {
+  cursor: pointer;
+}
+
+.table-list-item:nth-child(even) {
+  background-color: #3e3d3d;
+}
+
+.table-list-item.active {
+  background: #6b56d4;
+}
