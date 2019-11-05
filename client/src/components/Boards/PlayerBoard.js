@@ -4,7 +4,7 @@ import Card from '../Card/card.js'
 import './board.css';
 
 const PlayerBoard = props => {
-  console.log(props);
+  // console.log(props);
   return (
     <div className="board">
       <div className="top">

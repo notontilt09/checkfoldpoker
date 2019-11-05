@@ -53,7 +53,7 @@ const Login = (props) => {
   // }
 
   return (
-    <div className="card">
+    <div className="login">
       <div className="form">
         <input
           type="username"

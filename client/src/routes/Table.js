@@ -3,6 +3,9 @@ import Loader from 'react-loader-spinner';
 import PlayerBoard from '../components/Boards/PlayerBoard.js';
 import ActionButtons from '../components/ActionButtons.js';
 import Seat from '../components/Seat/Seat.js';
+import SocketIOClient from 'socket.io-client';
+
+import '../styles/table.css';
 
 const initialSeats = [
   {
@@ -29,58 +32,41 @@ const initialSeats = [
   },
 ];
 
-const Table = () => {
-  // setup websocket instance
-  const [ws, setWs] = useState(new WebSocket('ws://localhost:3030'));
-  // boolean to keep track if it's our turn to show action buttons
-  const [myTurn, setMyTurn] = useState(false);
+const Table = (props) => {
+  // tableID corresponding to ObjectID in db
+  const tableID = props.match.params.id;
+  // socketIO endpoint.  TODO: Create room/namespace with the tableID
+  const endpoint = "http://localhost:5000";  
+  const [tableInfo, setTableInfo] = useState(null)
+  
   // map of all seats (seats contain board info)
   const [seats, setSeats] = useState(initialSeats);
   // boolean to kep track if we've already taken a seat
   const [seated, setSeated] = useState(false);
   const [numFilledSeats, setNumFilledSeats] = useState(0);
-  const [username, setUsername] = useState(null);
-
-  ws.onopen = () => {
-    console.log('connected');
-    console.log(ws.readyState);
-  };
-
-  ws.onmessage = (e) => {
-    const seatArray = JSON.parse(e.data);
-    console.log('sa', seatArray);
-    setSeats(seatArray);
-  };
-
-  ws.onclose = () => {
-    // try to reconnect the websocket if it gets disconnected
-    console.log('disconnected, attempting to reconnect');
-    setWs(new WebSocket('ws://localhost:3030'));
-  };
-
-  // if user sits down or stands up from table, send the new seat information to the server
+  //boolean to keep track if it's our turn to display action buttons
+  const [myTurn, setmyTurn] = useState(false);
+  
+  // on mount, get the table info.
   useEffect(() => {
-    // seat information to send to ws server
-    const seatInfo = {
-      seats,
-      type: 'seat',
-    };
-
-    // if connected send the seatInfo
-    if (ws.readyState === 1) {
-      ws.send(JSON.stringify(seatInfo));
+    const socket = SocketIOClient(endpoint);
+    async function fetchTableInfo() {
+      await socket.emit('get_table_id', tableID);
     }
-  }, [numFilledSeats]);
+    fetchTableInfo();
+    socket.on('table info', (res) => {
+      console.log(res);
+      setTableInfo(res.table);
+    });
+  }, [])
+
 
   const sitHere = (seatNumber) => {
-    const me = window.prompt('What is your name?');
-    setUsername(me);
     setSeats(
       seats.map((seat) => {
         if (seat.seatId === seatNumber) {
           return {
             ...seat,
-            name: me,
             filled: true,
           };
         } else {
@@ -115,23 +101,18 @@ const Table = () => {
 
   return (
     <div className="table">
-      {/* if websocket in connecting state, show a spinner */}
-      {ws.readyState === 0 && <Loader type="TailSpin" color="gray" />}
-      {/* if websocket in ready state show table */}
-      {ws.readyState === 1 &&
-        seats.map((seat) => (
+        {seats.map((seat) => (
           <div key={seat.seatId} className="player-area">
             <Seat
               seat={seat}
               sitHere={sitHere}
               seated={seated}
               standUp={standUp}
-              username={username}
             />
             <PlayerBoard seat={seat} />
           </div>
         ))}
-      {myTurn && <ActionButtons />}
+        {myTurn && <ActionButtons />}
     </div>
   );
 };

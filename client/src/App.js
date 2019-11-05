@@ -6,6 +6,7 @@ import {AuthContext} from './context/auth';
 import Login from './routes/Login';
 import Lobby from './routes/Lobby';
 import Admin from './routes/Admin';
+import Table from './routes/Table';
 
 import './styles/app.css';
 
@@ -22,6 +23,7 @@ function App(props) {
       <BrowserRouter>
         <Route exact path="/" component={Login} />
         <Route path="/lobby" component={Lobby} />
+        <Route path="/table/:id" component={Table} />
         <PrivateRoute path="/admin" component={Admin} />
       </BrowserRouter>
     </AuthContext.Provider>

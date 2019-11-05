@@ -19,6 +19,13 @@ const Lobby = () => {
       .catch(err => console.log(err));
   }, [])
 
+  // open table in popout window
+  // TODO: FIND A WAY TO OPEN TABLES IN TILED VIEW, CURRENTLY OVERLAPPING
+  const openTable = (id) => {
+    const windowFeatures = 'toolbar=no,height=600,width=1000,top=0,left=0';
+    window.open(`table/${id}`, id, windowFeatures);
+  }
+
   return (
     tableInfo.length > 0 ?
       <table className="tables-list">
@@ -32,6 +39,7 @@ const Lobby = () => {
           {tableInfo.map(table => (
             <tr 
               onClick={() => setSelectedTable(table._id)}
+              onDoubleClick={() => openTable(table._id)}
               className={selectedTable === table._id ? "active table-list-item" : "table-list-item"}
               key={table._id}
             >
