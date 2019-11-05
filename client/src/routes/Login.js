@@ -1,70 +1,67 @@
-import React, {useState} from 'react';
-import {Redirect} from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+// import {Redirect} from 'react-router-dom';
 import axios from 'axios';
 import {useAuth} from '../context/auth';
 
 const Login = (props) => {
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [error, setError] = useState(false);
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const {setAuthTokens} = useAuth();
-  console.log(props);
-  const locState = props.location.state;
-  const referer = locState ? locState.referer || '/' : '/';
+  // console.log(props);
+
+  // if isLoggedIn boolean gets flips to true and redirect to lobby
+  useEffect(() => {
+    if(isLoggedIn) {
+      props.history.push('/lobby');
+    }
+  }, [props.history, isLoggedIn])
 
   function postLogin() {
     axios
       .post('http://localhost:5000/api/auth/login', {
-        userName,
+        username,
         password,
       })
-      .then((result) => {
-        if (result.status === 200) {
-          setAuthTokens(result.data);
-          setLoggedIn(true);
-        } else {
-          setIsError(true);
-        }
+      .then((res) => {
+        setAuthTokens(res.data.token);
+        setLoggedIn(true);
       })
-      .catch((e) => {
-        setIsError(true);
+      .catch((err) => {
+        setError(err.response.data.message);
       });
   }
 
   function postRegistration() {
     axios
       .post('http://localhost:5000/api/auth/register', {
-        userName,
+        username,
         password,
       })
       .then((res) => {
-        if (res.status === 200) {
-          setAuthTokens(res.data);
-          setLoggedIn(true);
-        } else {
-          setIsError(true);
-        }
+        setAuthTokens(res.data.token);
+        setLoggedIn(true);
       })
-      .catch((e) => {
-        setIsError(true);
+      .catch((err) => {
+        setError(err.response.data.message);
       });
   }
 
-  if (isLoggedIn) {
-    return <Redirect to={referer} />;
-  }
+  // if (isLoggedIn) {
+  //   return <Redirect to={referer} />;
+  // }
 
   return (
     <div className="card">
       <div className="form">
         <input
           type="username"
-          value={userName}
+          value={username}
           onChange={(e) => {
-            setUserName(e.target.value);
+            setUsername(e.target.value);
           }}
-          placeholder="email"
+          placeholder="username"
         />
         <input
           type="password"
@@ -80,8 +77,8 @@ const Login = (props) => {
         <button className="submit" onClick={postRegistration}>
           Create Account
         </button>
-        {isError && (
-          <div className="error">The Username or Password were incorrect.</div>
+        {error && (
+          <div className="error">{error}</div>
         )}
       </div>
     </div>

@@ -13,14 +13,14 @@ function App(props) {
   const [authTokens, setAuthTokens] = useState();
 
   const setTokens = (data) => {
-    localStorage.setItem('tokens', JSON.stringify(data));
+    localStorage.setItem('token', JSON.stringify(data));
     setAuthTokens(data);
   };
 
   return (
     <AuthContext.Provider value={{authTokens, setAuthTokens: setTokens}}>
       <BrowserRouter>
-        <Route path="/" component={Login} exact />
+        <Route exact path="/" component={Login} />
         <PrivateRoute path="/lobby" component={Lobby} />
         <PrivateRoute path="/admin" component={Admin} />
       </BrowserRouter>
