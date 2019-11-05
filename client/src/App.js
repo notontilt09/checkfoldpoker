@@ -1,14 +1,15 @@
 import React, {useState} from 'react';
 import {BrowserRouter, Route} from 'react-router-dom';
 import PrivateRoute from './routes/PrivateRoute';
+import {AuthContext} from './context/auth';
+
 import Login from './routes/Login';
 import Lobby from './routes/Lobby';
 import Admin from './routes/Admin';
 
 import './styles/app.css';
-import {AuthContext} from './context/auth';
 
-function App() {
+function App(props) {
   const [authTokens, setAuthTokens] = useState();
 
   const setTokens = (data) => {

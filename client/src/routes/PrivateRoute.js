@@ -4,22 +4,17 @@ import {useAuth} from '../context/auth';
 
 // A wrapper for <Route> that redirects to the login
 // screen if you're not yet authenticated.
-function PrivateRoute({children, ...rest}) {
+function PrivateRoute({component: Component, ...rest}) {
   const {authTokens} = useAuth();
 
   return (
     <Route
       {...rest}
-      render={({location}) =>
+      render={(props) =>
         authTokens ? (
-          children
+          <Component {...props} />
         ) : (
-          <Redirect
-            to={{
-              pathname: '/login',
-              state: {from: location},
-            }}
-          />
+          <Redirect to={{pathname: '/', state: {referer: props.location}}} />
         )
       }
     />
