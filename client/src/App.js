@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Loader from 'react-loader-spinner'
 // import axios from 'axios';
 import './App.css';
+import socketIOClient from 'socket.io-client';
 
 // import images from './assets/images.js';
 import PlayerBoard from './components/Boards/PlayerBoard.js';
@@ -33,6 +34,20 @@ const initialSeats = [
   },
 ]
 
+// // ! dummy component to check socket.io implementation
+// const App = () => {
+//   const [endpoint, setEndpoint] = useState('localhost:5000');
+
+//   useEffect(() => {
+//     const socket = socketIOClient(endpoint);
+//     console.log('socket', socket);
+//   }, [])
+
+//   return (
+//     <div>test</div>
+//   )
+// }
+
 const App = () => {
   // setup websocket instance
   const [ws, setWs] = useState(new WebSocket('ws://localhost:3030'));
@@ -44,23 +59,6 @@ const App = () => {
   const [seated, setSeated] = useState(false);
   const [numFilledSeats, setNumFilledSeats] = useState(0);
   const [username, setUsername] = useState(null);
-
-  ws.onopen = () => {
-    console.log('connected');
-    console.log(ws.readyState);
-  }
-
-  ws.onmessage = e => {
-    const seatArray = JSON.parse(e.data);
-    console.log('sa', seatArray);
-    setSeats(seatArray);
-  }
-
-  ws.onclose = () => {
-    // try to reconnect the websocket if it gets disconnected
-    console.log('disconnected, attempting to reconnect');
-    setWs(new WebSocket('ws://localhost:3030'));
-  }
 
   // if user sits down or stands up from table, send the new seat information to the server
   useEffect(() => {
@@ -115,15 +113,8 @@ const App = () => {
 
   return (
     <div className='table'>
-      {/* if websocket in connecting state, show a spinner */}
-      {ws.readyState === 0 &&
-        <Loader 
-          type="TailSpin" 
-          color="gray" 
-        />
-      }
       {/* if websocket in ready state show table */}
-      {ws.readyState === 1 && seats.map(seat => (
+      {seats.map(seat => (
         <div key={seat.seatId} className="player-area">
           <Seat 
             seat={seat} 
