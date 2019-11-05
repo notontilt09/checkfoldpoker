@@ -10,7 +10,6 @@
 
 # production
 /build
-dist.js
 
 # misc
 .DS_Store
