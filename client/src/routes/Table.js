@@ -42,6 +42,7 @@ const Table = (props) => {
   
   // map of all seats (seats contain board info)
   const [seats, setSeats] = useState(initialSeats);
+  const [playerMap, setPlayerMap] = useState({1: null, 2: null});
   // boolean to kep track if we've already taken a seat
   const [seated, setSeated] = useState(false);
   const [numFilledSeats, setNumFilledSeats] = useState(0);
@@ -69,23 +70,27 @@ const Table = (props) => {
   // sits player in empty seat, called from Seat.js
   const sitHere = (seatNumber) => {
     axios.post(`${url}/api/tables/join-table`, {tableID, username})
-      .then(res => console.log(res))
+      .then(res => {
+        setSeats(
+          seats.map((seat) => {
+            if (seat.seatId === seatNumber) {
+              return {
+                ...seat,
+                filled: true,
+                name: res.data.username,
+                // TODO: this will be changed to a popup modal to add funds
+                bank: window.prompt(`Balance: $${res.data.balance}, how much would you like to sit down with?`)
+              };
+            } else {
+              return seat;
+            }
+          })
+        );
+        setSeated(true);
+        setNumFilledSeats(numFilledSeats + 1);
+      })
       .catch(err => console.log(err));
 
-    setSeats(
-      seats.map((seat) => {
-        if (seat.seatId === seatNumber) {
-          return {
-            ...seat,
-            filled: true,
-          };
-        } else {
-          return seat;
-        }
-      })
-    );
-    setSeated(true);
-    setNumFilledSeats(numFilledSeats + 1);
   };
 
   const standUp = (seatNumber) => {
