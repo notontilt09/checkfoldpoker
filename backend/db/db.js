@@ -2,7 +2,7 @@ const mongo = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017';
 
 // db variable to be set to the connected database
-let _db;
+let _db = 1;
 
 // connect to the db
 const connect = () => {
@@ -13,11 +13,12 @@ const connect = () => {
       if (err) {
         console.log(err);
         // exit the process if error in connection
-        process.exit(0);
+        return
       }
       // set _db variable to the mongoDB
       _db = client.db('checkfold_db');
-      console.log(`Connected to ${url}`);
+      console.log(`Connected to ${url}\n`);
+      // console.log(_db);
     }
   );
 };

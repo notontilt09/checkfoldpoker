@@ -4,6 +4,7 @@ import PlayerBoard from '../components/Boards/PlayerBoard.js';
 import ActionButtons from '../components/ActionButtons.js';
 import Seat from '../components/Seat/Seat.js';
 import SocketIOClient from 'socket.io-client';
+import axios from 'axios';
 
 import '../styles/table.css';
 
@@ -11,7 +12,6 @@ const initialSeats = [
   {
     seatId: 1,
     name: null,
-    bank: 1000,
     filled: false,
     top: [null, null, null],
     middle: [null, null, null, null, null],
@@ -22,7 +22,6 @@ const initialSeats = [
   {
     seatId: 2,
     name: null,
-    bank: 1000,
     filled: false,
     top: [null, null, null],
     middle: [null, null, null, null, null],
@@ -32,11 +31,13 @@ const initialSeats = [
   },
 ];
 
+const url = 'http://localhost:5000';
+const username = localStorage.getItem('cfp-user');
+
 const Table = (props) => {
   // tableID corresponding to ObjectID in db
   const tableID = props.match.params.id;
   // socketIO endpoint.  TODO: Create room/namespace with the tableID
-  const endpoint = "http://localhost:5000";  
   const [tableInfo, setTableInfo] = useState(null)
   
   // map of all seats (seats contain board info)
@@ -47,21 +48,30 @@ const Table = (props) => {
   //boolean to keep track if it's our turn to display action buttons
   const [myTurn, setmyTurn] = useState(false);
   
-  // on mount, get the table info.
+  // on mount, get the table info from REST endpoint.
   useEffect(() => {
-    const socket = SocketIOClient(endpoint);
+    let socket = SocketIOClient(`${url}`);
+    socket.on('connect', () => {
+      socket.emit('room', tableID);
+    })
+
     async function fetchTableInfo() {
-      await socket.emit('get_table_id', tableID);
+      await socket.emit('get_table_info', tableID);
     }
     fetchTableInfo();
-    socket.on('table info', (res) => {
+
+    socket.on('table-info', (res) => {
       console.log(res);
       setTableInfo(res.table);
     });
   }, [])
 
-
+  // sits player in empty seat, called from Seat.js
   const sitHere = (seatNumber) => {
+    axios.post(`${url}/api/tables/join-table`, {tableID, username})
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
+
     setSeats(
       seats.map((seat) => {
         if (seat.seatId === seatNumber) {

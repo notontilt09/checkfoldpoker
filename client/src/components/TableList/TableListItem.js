@@ -6,7 +6,7 @@ const TableListItem = (props) => {
       <td>{props.table.name}</td>
       <td>{`${props.table.stakes}/pt`}</td>
       <td>{props.table.type}</td>
-      <td>{props.table.players}</td> 
+      <td>{`${props.table.seatedPlayers.length}/${props.table.players}`}</td> 
     </>
   );
 };

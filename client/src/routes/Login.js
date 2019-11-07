@@ -27,14 +27,15 @@ const Login = (props) => {
       .then((res) => {
         setAuthTokens(res.data.token);
         setLoggedIn(true);
+        localStorage.setItem('cfp-user', username);
       })
       .catch((err) => {
         setError(err.response.data.message);
       });
-  }
-
-  function postRegistration() {
-    axios
+    }
+    
+    function postRegistration() {
+      axios
       .post('http://localhost:5000/api/auth/register', {
         username,
         password,
@@ -42,6 +43,7 @@ const Login = (props) => {
       .then((res) => {
         setAuthTokens(res.data.token);
         setLoggedIn(true);
+        localStorage.setItem('cfp-user', username);
       })
       .catch((err) => {
         setError(err.response.data.message);
