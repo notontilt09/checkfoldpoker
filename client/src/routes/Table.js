@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Loader from 'react-loader-spinner';
 import PlayerBoard from '../components/Boards/PlayerBoard.js';
 import ActionButtons from '../components/ActionButtons.js';
+import BuyinModal from '../components/BuyinModal/BuyinModal.js';
 import Seat from '../components/Seat/Seat.js';
 import SocketIOClient from 'socket.io-client';
 import axios from 'axios';
@@ -37,17 +38,20 @@ const username = localStorage.getItem('cfp-user');
 const Table = (props) => {
   // tableID corresponding to ObjectID in db
   const tableID = props.match.params.id;
-  // socketIO endpoint.  TODO: Create room/namespace with the tableID
+  // tableInfo set to table document from tables collection in DB
   const [tableInfo, setTableInfo] = useState(null)
-  
   // map of all seats (seats contain board info)
   const [seats, setSeats] = useState(initialSeats);
-  const [playerMap, setPlayerMap] = useState({1: null, 2: null});
   // boolean to kep track if we've already taken a seat
   const [seated, setSeated] = useState(false);
-  const [numFilledSeats, setNumFilledSeats] = useState(0);
   //boolean to keep track if it's our turn to display action buttons
   const [myTurn, setmyTurn] = useState(false);
+  // show or hide the buy-in popup for a specific seat
+  const [showBuyin, setShowBuyin] = useState(null);
+  // users balance from db
+  const [balance, setBalance] = useState(null);
+  // error handling for buyin
+  const [buyinError, setBuyinError] = useState(null);
   
   // on mount, get the table info from REST endpoint.
   useEffect(() => {
@@ -65,11 +69,20 @@ const Table = (props) => {
       console.log(res);
       setTableInfo(res.table);
     });
-  }, [])
+  }, [tableID])
+
+  // when buyin modal is opened, get the users balance from db
+  useEffect(() => {
+    if (showBuyin) {
+      axios.post(`${url}/api/tables/get-balance`, {username: username})
+        .then(res => setBalance(res.data.balance))
+        .catch(err => console.log(err))
+    }
+  }, [showBuyin])
 
   // sits player in empty seat, called from Seat.js
-  const sitHere = (seatNumber) => {
-    axios.post(`${url}/api/tables/join-table`, {tableID, username})
+  const sitHere = (seatNumber, amount) => {
+    axios.post(`${url}/api/tables/join-table`, {tableID, username, amount: parseInt(amount)})
       .then(res => {
         setSeats(
           seats.map((seat) => {
@@ -78,8 +91,7 @@ const Table = (props) => {
                 ...seat,
                 filled: true,
                 name: res.data.username,
-                // TODO: this will be changed to a popup modal to add funds
-                bank: window.prompt(`Balance: $${res.data.balance}, how much would you like to sit down with?`)
+                bank: amount
               };
             } else {
               return seat;
@@ -87,15 +99,18 @@ const Table = (props) => {
           })
         );
         setSeated(true);
-        setNumFilledSeats(numFilledSeats + 1);
+        setShowBuyin(false);
       })
-      .catch(err => console.log(err));
+      .catch(err => setBuyinError(err.response.data.message));
 
   };
 
-  const standUp = (seatNumber) => {
-    console.log(`standing up from seat ${seatNumber}`);
+  const standUp = (seatNumber, amount) => {
     if (window.confirm('Are you sure you want to leave?')) {
+      axios.post(`${url}/api/tables/leave-table`, {tableID, username, amount: parseInt(amount)})
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+
       setSeats(
         seats.map((seat) => {
           if (seat.seatId === seatNumber) {
@@ -110,7 +125,7 @@ const Table = (props) => {
         })
       );
       setSeated(false);
-      setNumFilledSeats(numFilledSeats - 1);
+
     }
   };
 
@@ -120,14 +135,29 @@ const Table = (props) => {
           <div key={seat.seatId} className="player-area">
             <Seat
               seat={seat}
-              sitHere={sitHere}
+              username={username}
               seated={seated}
               standUp={standUp}
+              showBuyin={showBuyin}
+              setShowBuyin={setShowBuyin}
+              sitHere={sitHere}
+              tableID={tableID}
+              balance={balance}
+              buyinError={buyinError}
             />
             <PlayerBoard seat={seat} />
           </div>
         ))}
         {myTurn && <ActionButtons />}
+        {/* {showBuyin && 
+          <BuyinModal 
+            sitHere={sitHere} 
+            setShowBuyin={setShowBuyin}
+            tableID={tableID}
+            balance={balance}
+            buyinError={buyinError}
+          />
+        } */}
     </div>
   );
 };

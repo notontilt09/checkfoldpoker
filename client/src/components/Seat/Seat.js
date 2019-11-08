@@ -1,13 +1,18 @@
 import React from 'react'
+import BuyinModal from '../BuyinModal/BuyinModal';
 
 import './seat.css';
 
 const Seat = props => {
 
-  const sitDown = () => {
+  const showModal = (seatId) => {
     if (!props.seated) {
-      props.sitHere(props.seat.seatId);
+      props.setShowBuyin(seatId);
     }
+  }
+
+  const cancelBuyin = () => {
+    props.setShowBuyin(false);
   }
 
   return (
@@ -20,13 +25,24 @@ const Seat = props => {
         </div>
       }
       {props.seat.name && props.seat.name === props.username &&
-        <button className="leave" onClick={() => props.standUp(props.seat.seatId)}>Leave Table</button>
+        <button className="leave" onClick={() => props.standUp(props.seat.seatId, props.seat.bank)}>Leave Table</button>
       }
       {!props.seat.filled &&
         // seat is empty
-        <div className='seat-open' onClick={sitDown}>
+        <div className='seat-open' onClick={() => showModal(props.seat.seatId)}>
           <h4>Seat Open</h4>
         </div>
+      }
+      {props.showBuyin === props.seat.seatId &&
+        <BuyinModal 
+          sitHere={props.sitHere} 
+          setShowBuyin={props.setShowBuyin}
+          tableID={props.tableID}
+          balance={props.balance}
+          buyinError={props.buyinError}
+          seat={props.seat}
+          cancelBuyin={cancelBuyin}
+        />
       }
     </div>
   )
