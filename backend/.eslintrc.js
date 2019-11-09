@@ -16,5 +16,6 @@ module.exports = {
     'linebreak-style': 0,
     'no-unused-vars': 1,
     'require-jsdoc': 0,
+    'new-cap': 0,
   },
 };
