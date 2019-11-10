@@ -5,7 +5,7 @@
  *
  * @ops - An async anonymous function that consumes a variable (db)
  * @res - The response object if this function is called from a
- *        route handler.
+ *        REST route handler.
  */
 
 const MongoClient = require('mongodb').MongoClient;
@@ -32,10 +32,12 @@ async function withDB(ops, res) {
     console.log(`Database Closed`);
   } catch (err) {
     console.log(err);
-    res.status(500).json({
-      message: err.errmsg,
-      err,
-    });
+    if (res) {
+      res.status(500).json({
+        message: err.errmsg,
+        err,
+      });
+    }
   }
 }
 
