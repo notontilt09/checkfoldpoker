@@ -8,6 +8,7 @@ const withDB = require('../db/withDB');
 const bcrypt = require('bcryptjs');
 const NUM_USERS = 10;
 const NUM_TABLES = 20;
+const INIT_BALANCE = 10000;
 
 withDB(async (db) => {
   // drop existing tables
@@ -32,7 +33,7 @@ withDB(async (db) => {
 });
 
 function generateTables(num) {
-  const gameType = ['OFC', 'Omaha', 'Holdem', 'Stud', 'Badugi'];
+  const gameType = ['OFC'];
   const gameStakes = ['1', '5', '10', '25', '50', '100'];
   const playerNames = [
     'Isaias',
@@ -143,7 +144,7 @@ function generateTables(num) {
   for (let i = 0; i < num; i += 1) {
     const gt = gameType[getRand(0, gameType.length - 1)];
     const gs = gameStakes[getRand(0, gameStakes.length - 1)];
-    const p = gameType === 'OFC' ? '3' : '6';
+    const p = gt === 'OFC' ? '3' : '6';
     const sp = [];
     const spMax = getRand(0, p);
     for (let j = 0; j < spMax; j += 1) {
@@ -174,6 +175,7 @@ function generateUsers(num) {
     const obj = {
       username: `example${padNum}`,
       password: hash,
+      balance: INIT_BALANCE
     };
 
     data.push(obj);

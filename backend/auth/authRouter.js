@@ -25,7 +25,8 @@ router.post('/register', async (req, res) => {
       if (existingUser) {
         res.status(400).json({error: `user ${username} already exists.`});
       } else {
-        const dbres = await users.insertOne({username, password});
+        const balance = 10000;
+        const dbres = await users.insertOne({username, password, balance});
         const user = await users.findOne({_id: dbres.insertedId});
         const token = tokenService.generateToken(user);
         res.status(200).json({
