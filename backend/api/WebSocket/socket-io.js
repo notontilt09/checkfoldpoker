@@ -6,6 +6,15 @@ const connection = (io) => {
   io.on('connection', async (socket) => {
     console.log(`New client socket.id: ${socket.id} connected`);
 
+    socket.on('get-lobby-info', async () => {
+      console.log('here');
+      withDB(async (db) => {
+        const tables = await db.collection('tables').find().toArray();
+        io.emit('lobby-info', {tables})
+      })
+    })
+    
+
     socket.on('get_table_info', async (id) => {
       withDB(async (db) => {
         const table = await db
@@ -20,6 +29,7 @@ const connection = (io) => {
       socket.join(room);
       console.log(`Client ${socket.id} joined room ${room}`);
     });
+
 
     socket.on('disconnect', () => {
       console.log('user disconnected');

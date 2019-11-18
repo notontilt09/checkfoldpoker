@@ -1,3 +1,6 @@
+.lobby {
+  display: flex;
+}
 
 .tables-list {
   width: 70%;
@@ -19,4 +22,8 @@ td {
 
 .table-list-item.active {
   background: #6b56d4;
+}
+
+.selected-table-info {
+  width: 30%;
 }

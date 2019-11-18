@@ -1,23 +1,43 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import SocketIOClient from 'socket.io-client';
 
 import TableListItem from '../components/TableList/TableListItem';
 
 import '../styles/lobby.css';
 
-const Lobby = () => {
+// const url = 'http://localhost:5000';
+const username = localStorage.getItem('cfp-user');
+
+const Lobby = (props) => {
+  // console.log(props);
   const [tableInfo, setTableInfo] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
+  const [socket, setSocket] = useState(null);
+  console.log(selectedTable);
 
-  // load all the table info from server on mount
+  // when socket is defined during mount, run this side effect to get lobby information
   useEffect(() => {
-    axios
-      .get('http://localhost:5000/api/tables/')
-      .then(res => {
-        setTableInfo(res.data);
+    if (props.socket) {
+
+      async function fetchLobbyInfo() {
+        await props.socket.emit('get-lobby-info');
+      }
+
+      fetchLobbyInfo();
+      
+      props.socket.on('lobby-info', res => {
+        const prev_selected = tableInfo._id
+        setTableInfo(res.tables);
       })
-      .catch(err => console.log(err));
-  }, [])
+    }
+  }, [props.socket])
+
+  useEffect(() => {
+    if (selectedTable) {
+      setSelectedTable(tableInfo.find(table => table._id === selectedTable._id))
+    }
+  }, [tableInfo])
 
   // open table in popout window
   // TODO: FIND A WAY TO OPEN TABLES IN TILED VIEW, CURRENTLY OVERLAPPING
@@ -28,26 +48,39 @@ const Lobby = () => {
 
   return (
     tableInfo.length > 0 ?
-      <table className="tables-list">
-        <tbody>
-          <tr>
-            <th>Table</th>
-            <th>Stakes</th>
-            <th>Game Type</th>
-            <th>Players</th>
-          </tr>
-          {tableInfo.map(table => (
-            <tr 
-              onClick={() => setSelectedTable(table._id)}
-              onDoubleClick={() => openTable(table._id)}
-              className={selectedTable === table._id ? "active table-list-item" : "table-list-item"}
-              key={table._id}
-            >
-              <TableListItem selectedTable={selectedTable} table={table} />
+      <div className='lobby'>
+        <table className="tables-list">
+          <tbody>
+            <tr>
+              <th>Table</th>
+              <th>Stakes</th>
+              <th>Game Type</th>
+              <th>Players</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            {tableInfo.map(table => (
+              <tr 
+                onClick={() => setSelectedTable(table)}
+                onDoubleClick={() => openTable(table._id)}
+                className={selectedTable === table ? "active table-list-item" : "table-list-item"}
+                key={table._id}
+              >
+                <TableListItem selectedTable={selectedTable} table={table} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {selectedTable &&
+          <section className='selected-table-info'>
+            <h3>{selectedTable.name}</h3>
+            <h3>{selectedTable.type}</h3>
+            <ul>
+              {selectedTable.seatedPlayers.map(player => (
+                <li key={player}>{player}</li>
+              ))}
+            </ul>
+          </section>
+        }
+      </div>
       : <h3>Getting Table Information</h3>
   );
 };

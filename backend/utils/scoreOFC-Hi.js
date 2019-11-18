@@ -1,4 +1,3 @@
-
 const solver = require('pokersolver').Hand;
 
 // scores for top hands
@@ -83,8 +82,10 @@ const getTopRoyalties = (cards) => {
 }
 
 /**
- * 
- * @cards - 5 card hand of ranks with suits to be evaluated 
+ * Helper function to get royalty points for middle hands 
+ *
+ * @cards {array} 5 card hand of ranks with suits to be evaluated
+ * return {int} number of royalty points
  */
 
 const getMiddleRoyalites = (cards) => {
@@ -106,8 +107,10 @@ const getMiddleRoyalites = (cards) => {
 }
 
 /**
+ * Helper function to get royalty points for bottom hands
  * 
  * @cards - 5 card hand of ranks with suits to be evaluated 
+ * return {int} number of royalty points
  */
 
 const getBottomRoyalties = (cards) => {
@@ -176,7 +179,7 @@ const isFoul = (hand) => {
  * 
  */
 
-const scoreOFC = (hand1, hand2) => {
+const scoreOFChi = (hand1, hand2) => {
   // total royalty points for each hand
   let hand1royalty = 0;
   let hand2royalty = 0;
@@ -255,7 +258,7 @@ const scoreOFC = (hand1, hand2) => {
     // console.log('Bottom is tied');
   }
 
-  // * FINAL SCORING LOGIC
+  // ! FINAL SCORING LOGIC
   console.log(`Hand 1 Royalty: ${hand1royalty}, Hand 1 Lines Won: ${hand1lines}`);
   console.log(`Hand 2 Royalty: ${hand2royalty}, Hand 2 Lines Won: ${hand2lines}`);
 
@@ -318,8 +321,9 @@ const scoreOFC = (hand1, hand2) => {
   }
 }
 
-const test1 = [['9d', '9c', '6s'], ['As', 'Ks', 'Js', 'Qs', 'Ts'], ['Ac', 'Kc', 'Qc', 'Jc', 'Tc']];
-const test2 = [['9d', '9s', '6h'], ['2s', '2h', '2c', '2d', '5s'], ['3c', '3d', '3h', '3s', '4c']];
+const test1 = [['9d', '9c', '6s'], ['As', 'Ks', 'Js', 'Qs', 'Tc'], ['Ac', 'Kc', 'Qc', 'Jc', '9c']];
+const test2 = [['Kd', 'Qs', '6h'], ['2s', '2h', '2c', '3d', '5s'], ['3c', '3d', '3h', '3s', '4c']];
 
-console.log(scoreOFC(test1, test2));
+console.log(scoreOFChi(test1, test2));
 
+module.exports = { scoreOFChi, isFoul };

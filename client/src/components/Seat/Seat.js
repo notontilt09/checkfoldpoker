@@ -25,7 +25,7 @@ const Seat = props => {
         </div>
       }
       {props.seat.name && props.seat.name === props.username &&
-        <button className="leave" onClick={() => props.standUp(props.seat.seatId, props.seat.bank)}>Leave Table</button>
+        <button className="leave" onClick={() => props.standUp(props.seat.seatId, props.seat.bank)}>Stand up</button>
       }
       {!props.seat.filled &&
         // seat is empty
@@ -42,6 +42,7 @@ const Seat = props => {
           buyinError={props.buyinError}
           seat={props.seat}
           cancelBuyin={cancelBuyin}
+          tableInfo={props.tableInfo}
         />
       }
     </div>

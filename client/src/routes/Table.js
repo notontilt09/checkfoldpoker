@@ -36,6 +36,7 @@ const url = 'http://localhost:5000';
 const username = localStorage.getItem('cfp-user');
 
 const Table = (props) => {
+  console.log(props.socket);
   // tableID corresponding to ObjectID in db
   const tableID = props.match.params.id;
   // tableInfo set to table document from tables collection in DB
@@ -52,24 +53,50 @@ const Table = (props) => {
   const [balance, setBalance] = useState(null);
   // error handling for buyin
   const [buyinError, setBuyinError] = useState(null);
-  
-  // on mount, get the table info from REST endpoint.
+
+
+  // this is an attempt to make the user stand up from the table if they close the table window. CURRENTLY NOT WORKING PROPERLY.
   useEffect(() => {
-    let socket = SocketIOClient(`${url}`);
-    socket.on('connect', () => {
-      socket.emit('room', tableID);
-    })
-
-    async function fetchTableInfo() {
-      await socket.emit('get_table_info', tableID);
-    }
-    fetchTableInfo();
-
-    socket.on('table-info', (res) => {
-      console.log(res);
-      setTableInfo(res.table);
+    window.addEventListener('beforeunload', (event) => {
+      standUp(1, 2500);
+      event.returnValue = 'Are you sure?'
     });
-  }, [tableID])
+
+    return () => window.removeEventListener('beforeunload');
+  }, [])
+
+  useEffect(() => {
+    if (props.socket) {
+      props.socket.emit('get-lobby-info');
+    }
+  }, [seats])
+
+  // on mount when the socket is defined, get the table info from socket connection
+  useEffect(() => {
+    if (props.socket) {
+      console.log(props.socket);
+      props.socket.on('connect', () => {
+        props.socket.emit('room', tableID);
+      })
+  
+      async function fetchTableInfo() {
+        await props.socket.emit('get_table_info', tableID);
+      }
+      fetchTableInfo();
+  
+      props.socket.on('table-info', (res) => {
+        console.log(res);
+        setTableInfo(res.table);
+      });
+    }
+  }, [props.socket])
+
+  // if seats changes by user standing or sitting update the lobby
+  // useEffect(() => {
+  //   if (props.socket) {
+  //     props.socket.emit('get-lobby-info');
+  //   }
+  // }, [seats])
 
   // when buyin modal is opened, get the users balance from db
   useEffect(() => {
@@ -82,6 +109,11 @@ const Table = (props) => {
 
   // sits player in empty seat, called from Seat.js
   const sitHere = (seatNumber, amount) => {
+    if (!amount) {
+      setBuyinError('Please buy in for at least 100 points.');
+      return;
+    }
+
     axios.post(`${url}/api/tables/join-table`, {tableID, username, amount: parseInt(amount)})
       .then(res => {
         setSeats(
@@ -98,34 +130,32 @@ const Table = (props) => {
             }
           })
         );
-        setSeated(true);
-        setShowBuyin(false);
+        setSeated(true)
+        setShowBuyin(false)
       })
       .catch(err => setBuyinError(err.response.data.message));
-
   };
 
   const standUp = (seatNumber, amount) => {
     if (window.confirm('Are you sure you want to leave?')) {
       axios.post(`${url}/api/tables/leave-table`, {tableID, username, amount: parseInt(amount)})
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-
-      setSeats(
-        seats.map((seat) => {
-          if (seat.seatId === seatNumber) {
-            return {
-              ...seat,
-              name: null,
-              filled: false,
-            };
-          } else {
-            return seat;
-          }
+        .then(res => {
+          setSeats(
+            seats.map((seat) => {
+              if (seat.seatId === seatNumber) {
+                return {
+                  ...seat,
+                  name: null,
+                  filled: false,
+                };
+              } else {
+                return seat;
+              }
+            })
+          );
+          setSeated(false)
         })
-      );
-      setSeated(false);
-
+        .catch(err => console.log(err))
     }
   };
 
@@ -144,6 +174,7 @@ const Table = (props) => {
               tableID={tableID}
               balance={balance}
               buyinError={buyinError}
+              tableInfo={tableInfo}
             />
             <PlayerBoard seat={seat} />
           </div>
