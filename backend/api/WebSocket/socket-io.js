@@ -7,7 +7,6 @@ const connection = (io) => {
     console.log(`New client socket.id: ${socket.id} connected`);
 
     socket.on('get-lobby-info', async () => {
-      console.log('here');
       withDB(async (db) => {
         const tables = await db.collection('tables').find().toArray();
         io.emit('lobby-info', {tables})
@@ -15,12 +14,12 @@ const connection = (io) => {
     })
     
 
-    socket.on('get_table_info', async (id) => {
+    socket.on('get-table-info', async (id) => {
       withDB(async (db) => {
         const table = await db
           .collection('tables')
           .findOne({_id: ObjectId(id)});
-        socket.emit('table-info', {table});
+        io.emit('table-info', {table});
       });
     });
 

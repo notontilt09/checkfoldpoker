@@ -20,16 +20,16 @@ async function withDB(ops, res) {
     });
 
     await client.connect();
-    console.log(`Connected!`);
+    // console.log(`Connected!`);
     const db = client.db(dbName);
-    console.log(`Database Name: ${db.databaseName}`);
+    // console.log(`Database Name: ${db.databaseName}`);
 
-    console.log(`Commence Operations`);
+    // console.log(`Commence Operations`);
     await ops(db);
-    console.log(`Operations Finished`);
+    // console.log(`Operations Finished`);
 
     client.close();
-    console.log(`Database Closed`);
+    // console.log(`Database Closed`);
   } catch (err) {
     console.log(err);
     if (res) {

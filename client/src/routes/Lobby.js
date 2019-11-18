@@ -1,20 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import SocketIOClient from 'socket.io-client';
+// import axios from 'axios';
+// import SocketIOClient from 'socket.io-client';
 
 import TableListItem from '../components/TableList/TableListItem';
 
 import '../styles/lobby.css';
 
 // const url = 'http://localhost:5000';
-const username = localStorage.getItem('cfp-user');
+// const username = localStorage.getItem('cfp-user');
 
 const Lobby = (props) => {
   // console.log(props);
   const [tableInfo, setTableInfo] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
-  const [socket, setSocket] = useState(null);
-  console.log(selectedTable);
+  // const [socket, setSocket] = useState(null);
 
   // when socket is defined during mount, run this side effect to get lobby information
   useEffect(() => {
@@ -27,7 +26,6 @@ const Lobby = (props) => {
       fetchLobbyInfo();
       
       props.socket.on('lobby-info', res => {
-        const prev_selected = tableInfo._id
         setTableInfo(res.tables);
       })
     }
@@ -75,7 +73,7 @@ const Lobby = (props) => {
             <h3>{selectedTable.type}</h3>
             <ul>
               {selectedTable.seatedPlayers.map(player => (
-                <li key={player}>{player}</li>
+                <li key={player}>{`${player.username}   ${player.bank}`}</li>
               ))}
             </ul>
           </section>

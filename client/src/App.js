@@ -16,7 +16,7 @@ const url = 'http://localhost:5000';
 function App(props) {
   const [authTokens, setAuthTokens] = useState();
   const [socket, setSocket] = useState(null);
-  const [lobbyInfo, setLobbyInfo] = useState(null);
+  // const [lobbyInfo, setLobbyInfo] = useState(null);
 
   useEffect(() => {
     setSocket(SocketIOClient(url));

@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import './popup.css';
 
 const BuyinModal = (props) => {
-  console.log(props);
+  // console.log(props);
   const [buyinAmount, setBuyinAmount] = useState(parseInt(props.tableInfo.stakes*100));
 
   const handleBuyinChange = e => {
     setBuyinAmount(e.target.value);
   }
 
-  console.log('buyinAmount:', parseInt(buyinAmount), 'stakes:', parseInt(props.tableInfo.stakes))
+  // console.log('buyinAmount:', parseInt(buyinAmount), 'stakes:', parseInt(props.tableInfo.stakes))
 
   return (
     <div className="buyin-modal">

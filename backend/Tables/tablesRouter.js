@@ -22,7 +22,7 @@ router.post('/get-balance', async (req, res) => {
 });
 
 router.post('/join-table', async (req, res) => {
-  const {tableID, username, amount} = req.body;
+  const {tableID, seat, username, amount} = req.body;
 
   withDB(async (db) => {
     const user = await db.collection('users').findOne({username: username});
@@ -45,7 +45,7 @@ router.post('/join-table', async (req, res) => {
         .collection('tables')
         .updateOne(
           {_id: ObjectId(tableID)},
-          {$push: {seatedPlayers: user.username}}
+          {$push: {seatedPlayers: {seat, username: user.username, bank: amount}}}
         );
       // remove buyin amount from player balance
       await db
@@ -69,18 +69,20 @@ router.post('/leave-table', async (req, res) => {
     const table = await db
       .collection('tables')
       .findOne({_id: ObjectId(tableID)});
-    // if not at the table, 400 error
-    if (!table.seatedPlayers.includes(user.username)) {
+    // search the seatedPlayer array to find the user to remove
+    const player = table.seatedPlayers.find(player => player.username === user.username);
+      // if not at the table, 400 error
+    if (!player) {
       res
         .status(400)
         .json({message: `${username} is not at table ${table.name}.`});
     } else {
-      // remove username from the seatedPlayers field in this table's document
+      // remove user from the seatedPlayers field in this table's document
       await db
         .collection('tables')
         .updateOne(
           {_id: ObjectId(tableID)},
-          {$pull: {seatedPlayers: user.username}}
+          {$pull: {seatedPlayers: player}}
         );
       // add amount back to player balance
       await db

@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import Loader from 'react-loader-spinner';
+// import Loader from 'react-loader-spinner';
 import PlayerBoard from '../components/Boards/PlayerBoard.js';
 import ActionButtons from '../components/ActionButtons.js';
-import BuyinModal from '../components/BuyinModal/BuyinModal.js';
+// import BuyinModal from '../components/BuyinModal/BuyinModal.js';
 import Seat from '../components/Seat/Seat.js';
-import SocketIOClient from 'socket.io-client';
+// import SocketIOClient from 'socket.io-client';
 import axios from 'axios';
 
 import '../styles/table.css';
@@ -36,7 +36,7 @@ const url = 'http://localhost:5000';
 const username = localStorage.getItem('cfp-user');
 
 const Table = (props) => {
-  console.log(props.socket);
+  // console.log(props.socket);
   // tableID corresponding to ObjectID in db
   const tableID = props.match.params.id;
   // tableInfo set to table document from tables collection in DB
@@ -55,48 +55,63 @@ const Table = (props) => {
   const [buyinError, setBuyinError] = useState(null);
 
 
-  // this is an attempt to make the user stand up from the table if they close the table window. CURRENTLY NOT WORKING PROPERLY.
-  useEffect(() => {
-    window.addEventListener('beforeunload', (event) => {
-      standUp(1, 2500);
-      event.returnValue = 'Are you sure?'
-    });
+  // ! this is an attempt to make the user stand up from the table if they close the table window. CURRENTLY NOT WORKING PROPERLY.
+  // useEffect(() => {
+  //   window.addEventListener('beforeunload', (event) => {
+  //     standUp(1, 2500);
+  //     event.returnValue = 'Are you sure?'
+  //   });
 
-    return () => window.removeEventListener('beforeunload');
-  }, [])
+  //   return () => window.removeEventListener('beforeunload');
+  // }, [])
 
   useEffect(() => {
     if (props.socket) {
       props.socket.emit('get-lobby-info');
+      // props.socket.emit('get-table-info', tableID);
     }
-  }, [seats])
+  }, [seats, props.socket])
 
   // on mount when the socket is defined, get the table info from socket connection
   useEffect(() => {
     if (props.socket) {
-      console.log(props.socket);
+      // console.log(props.socket);
       props.socket.on('connect', () => {
         props.socket.emit('room', tableID);
       })
   
       async function fetchTableInfo() {
-        await props.socket.emit('get_table_info', tableID);
+        await props.socket.emit('get-table-info', tableID);
       }
+
       fetchTableInfo();
   
       props.socket.on('table-info', (res) => {
-        console.log(res);
+        console.log('new table info');
+        console.log(res.table);
         setTableInfo(res.table);
+        const filledSeats = [];
+        if (res.table.seatedPlayers.length) {
+          res.table.seatedPlayers.forEach(seat => filledSeats.push(seat.seat));
+        }
+        // console.log(filledSeats);
+        setSeats(
+          seats.map(seat => {
+            if (filledSeats.includes(seat.seatId)) {
+              return {
+                ...seat,
+                filled: true,
+                name: res.table.seatedPlayers.find(player => player.seat === seat.seatId).username,
+                bank: res.table.seatedPlayers.find(player => player.seat === seat.seatId).bank
+              }
+            } else {
+              return seat
+            }
+          })
+        );
       });
     }
-  }, [props.socket])
-
-  // if seats changes by user standing or sitting update the lobby
-  // useEffect(() => {
-  //   if (props.socket) {
-  //     props.socket.emit('get-lobby-info');
-  //   }
-  // }, [seats])
+  }, [props.socket, tableID])
 
   // when buyin modal is opened, get the users balance from db
   useEffect(() => {
@@ -114,7 +129,7 @@ const Table = (props) => {
       return;
     }
 
-    axios.post(`${url}/api/tables/join-table`, {tableID, username, amount: parseInt(amount)})
+    axios.post(`${url}/api/tables/join-table`, {tableID, seat: seatNumber, username, amount: parseInt(amount)})
       .then(res => {
         setSeats(
           seats.map((seat) => {
@@ -133,6 +148,7 @@ const Table = (props) => {
         setSeated(true)
         setShowBuyin(false)
       })
+      .then(() => props.socket.emit('get-table-info', tableID))
       .catch(err => setBuyinError(err.response.data.message));
   };
 
@@ -155,6 +171,7 @@ const Table = (props) => {
           );
           setSeated(false)
         })
+        .then(() => props.socket.emit('get-table-info', tableID))
         .catch(err => console.log(err))
     }
   };
