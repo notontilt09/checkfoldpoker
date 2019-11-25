@@ -7,7 +7,7 @@
 const withDB = require('../db/withDB');
 const bcrypt = require('bcryptjs');
 const NUM_USERS = 10;
-const NUM_TABLES = 50;
+const NUM_TABLES = 10;
 const INIT_BALANCE = 10000;
 
 withDB(async (db) => {
@@ -144,7 +144,7 @@ function generateTables(num) {
   for (let i = 0; i < num; i += 1) {
     const gt = gameType[getRand(0, gameType.length - 1)];
     const gs = gameStakes[getRand(0, gameStakes.length - 1)];
-    const p = gt.includes('OFC') ? '3' : '6';
+    const p = gt.includes('OFC') ? '2' : '6';
     const sp = [];
     const spMax = getRand(0, p);
     // for (let j = 0; j < spMax; j += 1) {

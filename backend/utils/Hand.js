@@ -1,18 +1,17 @@
 const Deck = require('./deck.js');
-const Player = require('./player.js');
 
 let handId = 1;
 
 class Hand {
-  constructor(numPlayers = 2, players) {
+  constructor(numPlayers, buttonSeat) {
     this.handId = handId;
-    handId++;
     this.numPlayers = numPlayers;
-
+    this.buttonSeat = buttonSeat;
+    
     const unshuffled = new Deck();
     this.deck = unshuffled.shuffle();
 
-    this.players = players.map((player) => new Player(player));
+    handId++;
   }
 }
 

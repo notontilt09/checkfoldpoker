@@ -62,7 +62,7 @@ router.post('/join-table', async (req, res) => {
 
 router.post('/leave-table', async (req, res) => {
   const {tableID, username, amount} = req.body;
-  console.log(tableID, username, amount);
+  // console.log(tableID, username, amount);
 
   withDB(async (db) => {
     const user = await db.collection('users').findOne({username: username});
@@ -88,7 +88,7 @@ router.post('/leave-table', async (req, res) => {
       await db
         .collection('users')
         .updateOne({username: username}, {$inc: {balance: amount}});
-      console.log(table);
+      // console.log(table);
       res.status(200).json({
         message: `${username} has left table ${table.name} with ${amount}.`,
       });

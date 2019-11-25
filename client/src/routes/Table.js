@@ -43,7 +43,7 @@ const Table = (props) => {
   const [tableInfo, setTableInfo] = useState(null)
   // map of all seats (seats contain board info)
   const [seats, setSeats] = useState(initialSeats);
-  // boolean to kep track if we've already taken a seat
+  // boolean to keep track if client has taken a seat
   const [seated, setSeated] = useState(false);
   //boolean to keep track if it's our turn to display action buttons
   const [myTurn, setmyTurn] = useState(false);
@@ -53,6 +53,13 @@ const Table = (props) => {
   const [balance, setBalance] = useState(null);
   // error handling for buyin
   const [buyinError, setBuyinError] = useState(null);
+  // boolean to keep track if a hand is in progress
+  const [inProgress, setInProgress] = useState(false);
+  // number of players seated to determine if a hand should start
+  const [numSeated, setNumSeated] = useState(0);
+  // seat that has the dealer button
+  const [button, setButtom] = useState(1);
+  
 
 
   // ! this is an attempt to make the user stand up from the table if they close the table window. CURRENTLY NOT WORKING PROPERLY.
@@ -65,15 +72,16 @@ const Table = (props) => {
   //   return () => window.removeEventListener('beforeunload');
   // }, [])
 
+  // when seats changes, update the global lobby for all
   useEffect(() => {
     if (props.socket) {
       props.socket.emit('get-lobby-info');
-      // props.socket.emit('get-table-info', tableID);
     }
   }, [seats, props.socket])
 
   // on mount when the socket is defined, get the table info from socket connection
   useEffect(() => {
+    console.log('fired effect to get tableInfo');
     if (props.socket) {
       // console.log(props.socket);
       props.socket.on('connect', () => {
@@ -94,7 +102,6 @@ const Table = (props) => {
         if (res.table.seatedPlayers.length) {
           res.table.seatedPlayers.forEach(seat => filledSeats.push(seat.seat));
         }
-        // console.log(filledSeats);
         setSeats(
           seats.map(seat => {
             if (filledSeats.includes(seat.seatId)) {
@@ -109,9 +116,18 @@ const Table = (props) => {
             }
           })
         );
+        setNumSeated(res.table.seatedPlayers.length);
       });
     }
   }, [props.socket, tableID])
+
+  // when numSeated changes, fire this effect to start a hand if one is not in progress
+  useEffect(() => {
+    if (numSeated > 1 && !inProgress) {
+      console.log('here');
+      props.socket.emit('begin-hand', {tableID, button});
+    }
+  }, [seated])
 
   // when buyin modal is opened, get the users balance from db
   useEffect(() => {
@@ -129,7 +145,8 @@ const Table = (props) => {
       return;
     }
 
-    axios.post(`${url}/api/tables/join-table`, {tableID, seat: seatNumber, username, amount: parseInt(amount)})
+    axios.post(`${url}/api/tables/join-table`, 
+      {tableID, seat: seatNumber, username, amount: parseInt(amount)})
       .then(res => {
         setSeats(
           seats.map((seat) => {
@@ -145,8 +162,11 @@ const Table = (props) => {
             }
           })
         );
-        setSeated(true)
-        setShowBuyin(false)
+        setNumSeated(numSeated + 1);
+      })
+      .then(() => {
+        setSeated(true);
+        setShowBuyin(false);
       })
       .then(() => props.socket.emit('get-table-info', tableID))
       .catch(err => setBuyinError(err.response.data.message));
@@ -169,8 +189,9 @@ const Table = (props) => {
               }
             })
           );
-          setSeated(false)
+          setNumSeated(numSeated - 1)
         })
+        .then(() => setSeated(false))
         .then(() => props.socket.emit('get-table-info', tableID))
         .catch(err => console.log(err))
     }

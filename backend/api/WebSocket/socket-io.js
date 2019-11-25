@@ -1,6 +1,6 @@
-// const mongo = require('../../db/db.js');
 const ObjectId = require('mongodb').ObjectID;
 const withDB = require('../../db/withDB');
+const Hand = require('../../utils/Hand.js');
 
 const connection = (io) => {
   io.on('connection', async (socket) => {
@@ -27,6 +27,22 @@ const connection = (io) => {
     socket.on('room', (room) => {
       socket.join(room);
       console.log(`Client ${socket.id} joined room ${room}`);
+    });
+
+    // try to begin a hand at a specific table/room
+    socket.on('begin-hand', async (data) => {
+      const { tableID , button } = data
+      console.log(`Begin hand at table ${tableID}.  Button in seat ${button}.`);
+      withDB(async (db) => {
+        const table = await db
+          .collection('tables')
+          .findOne({_id: ObjectId(tableID)});
+        
+        const hand = new Hand(table.seatedPlayers.length, button);
+        console.log(hand);
+        
+      })
+      
     });
 
 
