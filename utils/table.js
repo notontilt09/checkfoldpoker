@@ -1,4 +1,4 @@
-const Seat = require('./seat.js');
+const Seat = require('./seat');
 
 let tableId = 1;
 

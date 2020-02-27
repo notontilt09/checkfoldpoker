@@ -1,4 +1,4 @@
-const Deck = require('./deck.js');
+const Deck = require('./deck');
 
 let handId = 1;
 
