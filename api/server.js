@@ -1,7 +1,7 @@
 const express = require('express');
-const configureMiddleware = require('./middleware.js');
-const authRouter = require('../auth/authRouter.js');
-const tablesRouter = require('../tables/tablesRouter.js');
+const configureMiddleware = require('./middleware.js.js');
+const authRouter = require('../auth/authRouter.js.js');
+const tablesRouter = require('../Tables/tablesRouter.js.js');
 
 const server = express();
 

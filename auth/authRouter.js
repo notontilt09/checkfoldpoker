@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const tokenService = require('./tokenService.js');
+const tokenService = require('./tokenService.js.js');
 const bcrypt = require('bcryptjs');
 const db = require('../data/dbconfig');
 
