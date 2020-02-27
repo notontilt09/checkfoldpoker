@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const ObjectId = require('mongodb').ObjectID;
-const withDB = require('../db/withDB');
 
 router.get('/', async (req, res) => {
   withDB(async (db) => {

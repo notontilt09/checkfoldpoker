@@ -1,5 +1,4 @@
 const ObjectId = require('mongodb').ObjectID;
-const withDB = require('../../db/withDB');
 const Hand = require('../../utils/Hand.js');
 
 const connection = (io) => {
