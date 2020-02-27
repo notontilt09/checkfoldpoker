@@ -4,7 +4,7 @@ const http = require('http');
 const app = require('./api/server');
 const server = http.createServer(app);
 const io = socketIO(server);
-const connection = require('../api/WebSocket/socket-io')(io);
+const connection = require('./api/WebSocket/socket-io')(io);
 
 const port = process.env.PORT || 5000;
 
