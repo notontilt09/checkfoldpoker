@@ -58,7 +58,7 @@ const Table = (props) => {
   // number of players seated to determine if a hand should start
   const [numSeated, setNumSeated] = useState(0);
   // seat that has the dealer button
-  const [button, setButtom] = useState(1);
+  const [button, setButton] = useState(1);
   
 
 
@@ -95,8 +95,8 @@ const Table = (props) => {
       fetchTableInfo();
   
       props.socket.on('table-info', (res) => {
-        console.log('new table info');
-        console.log(res.table);
+        // console.log('new table info');
+        // console.log(res.table);
         setTableInfo(res.table);
         const filledSeats = [];
         if (res.table.seatedPlayers.length) {
@@ -118,13 +118,16 @@ const Table = (props) => {
         );
         setNumSeated(res.table.seatedPlayers.length);
       });
+
+      props.socket.on('deck', res => {
+        console.log(res);
+      })
     }
   }, [props.socket, tableID])
 
   // when numSeated changes, fire this effect to start a hand if one is not in progress
   useEffect(() => {
     if (numSeated > 1 && !inProgress) {
-      console.log('here');
       props.socket.emit('begin-hand', {tableID, button});
     }
   }, [seated])

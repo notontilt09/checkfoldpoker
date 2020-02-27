@@ -40,7 +40,8 @@ const connection = (io) => {
         
         const hand = new Hand(table.seatedPlayers.length, button);
         console.log(hand);
-        
+        // TODO:  Right now just sending the whole deck to the entire room.  Need to only send the neccessary cards to the correct seats.
+        io.to(tableID).emit('deck', hand.deck);
       })
       
     });

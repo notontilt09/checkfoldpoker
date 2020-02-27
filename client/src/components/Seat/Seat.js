@@ -4,7 +4,7 @@ import BuyinModal from '../BuyinModal/BuyinModal';
 import './seat.css';
 
 const Seat = props => {
-  console.log(props);
+  // console.log(props);
   const showModal = (seatId) => {
     if (!props.seated) {
       props.setShowBuyin(seatId);
