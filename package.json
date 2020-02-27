@@ -1,0 +1,22 @@
+{
+  "name": "checkfold",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "start": "node backend/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notontilt09/checkfoldpoker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/notontilt09/checkfoldpoker/issues"
+  },
+  "homepage": "https://github.com/notontilt09/checkfoldpoker#readme"
+}
