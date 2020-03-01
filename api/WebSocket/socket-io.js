@@ -1,25 +1,30 @@
 const ObjectId = require('mongodb').ObjectID;
 const Hand = require('../../utils/Hand.js');
+const db = require('../../data/dbconfig');
 
 const connection = (io) => {
   io.on('connection', async (socket) => {
     console.log(`New client socket.id: ${socket.id} connected`);
 
     socket.on('get-lobby-info', async () => {
-      withDB(async (db) => {
-        const tables = await db.collection('tables').find().toArray();
-        io.emit('lobby-info', {tables})
-      })
+      const tables = await db('tables');
+      io.emit('lobby-info', { tables });
     })
     
 
     socket.on('get-table-info', async (id) => {
-      withDB(async (db) => {
-        const table = await db
-          .collection('tables')
-          .findOne({_id: ObjectId(id)});
-        io.emit('table-info', {table});
-      });
+      const table = await db('tables').where({ id }).first();
+      
+      const seated = await db('Seated Players').where({ tableId: table.id })
+
+      io.emit('table-info', { seated });
+
+      // withDB(async (db) => {
+      //   const table = await db
+      //     .collection('tables')
+      //     .findOne({_id: ObjectId(id)});
+      //   io.emit('table-info', {table});
+      // });
     });
 
     // client will join a room corresponding to the table ID when they open a table

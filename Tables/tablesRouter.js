@@ -1,23 +1,32 @@
 const router = require('express').Router();
 const ObjectId = require('mongodb').ObjectID;
+const db = require('../data/dbconfig');
 
 router.get('/', async (req, res) => {
-  withDB(async (db) => {
-    const tables = await db
-      .collection('tables')
-      .find()
-      .toArray();
-    res.status(200).json(tables);
-  }, res);
+  const tables = await db('tables');
+  res.status(200).json(tables);
 });
 
-router.post('/get-balance', async (req, res) => {
-  const {username} = req.body;
+router.post('/info', async (req, res) => {
+  const { id } = req.body;
+  const table = await db('tables').where({ id }).first()
+  const seatedPlayers = await db('Seated Players').where({ tableId: table.id });
+  res.status(200).json({ seatedPlayers })
+})
 
-  withDB(async (db) => {
-    const user = await db.collection('users').findOne({username: username});
-    res.status(200).json({balance: user.balance});
-  }, res);
+router.post('/get-balance', async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const user = await db('users').where({ username });
+    if (user) {
+      res.status(200).json({ balance: user.balance })
+    } else {
+      res.status(400).json({ error: `Cannot find user ${username}.` });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 router.post('/join-table', async (req, res) => {

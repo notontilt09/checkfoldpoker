@@ -1,41 +1,42 @@
 import React, {useState, useEffect} from 'react';
-// import axios from 'axios';
-// import SocketIOClient from 'socket.io-client';
+import axios from 'axios';
 
 import TableListItem from '../components/TableList/TableListItem';
 
 import '../styles/lobby.css';
 
-// const url = 'http://localhost:5000';
+const url = 'http://localhost:5000/api/tables';
 // const username = localStorage.getItem('cfp-user');
 
 const Lobby = (props) => {
   // console.log(props);
-  const [tableInfo, setTableInfo] = useState([]);
+  const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
-  // const [socket, setSocket] = useState(null);
+  const [seatedPlayers, setSeatedPlayers] = useState(null);
+  console.log('tables', tables);
+  console.log('seated Players', seatedPlayers);
+  console.log('selected Table', selectedTable);
 
-  // when socket is defined during mount, run this side effect to get lobby information
   useEffect(() => {
-    if (props.socket) {
-
-      async function fetchLobbyInfo() {
-        await props.socket.emit('get-lobby-info');
-      }
-
-      fetchLobbyInfo();
-      
-      props.socket.on('lobby-info', res => {
-        setTableInfo(res.tables);
-      })
+    async function fetchLobbyInfo() {
+      const tables = await axios.get(url);
+      setTables(tables.data);
     }
-  }, [props.socket])
+
+    fetchLobbyInfo();
+  }, [])
 
   useEffect(() => {
+    async function fetchTableInfo(id) {
+      const tableDetail = await axios.post(`${url}/info`, { id });
+      setSeatedPlayers(tableDetail.data.seatedPlayers);
+    }
+
     if (selectedTable) {
-      setSelectedTable(tableInfo.find(table => table._id === selectedTable._id))
+      fetchTableInfo(selectedTable.id);
     }
-  }, [tableInfo])
+    
+  }, [selectedTable])
 
   // open table in popout window
   // TODO: FIND A WAY TO OPEN TABLES IN TILED VIEW, CURRENTLY OVERLAPPING
@@ -45,7 +46,7 @@ const Lobby = (props) => {
   }
 
   return (
-    tableInfo.length > 0 ?
+    tables.length > 0 ?
       <div className='lobby'>
         <table className="tables-list">
           <tbody>
@@ -53,14 +54,14 @@ const Lobby = (props) => {
               <th>Table</th>
               <th>Stakes</th>
               <th>Game Type</th>
-              <th>Players</th>
+              <th>Seats</th>
             </tr>
-            {tableInfo.map(table => (
+            {tables.map(table => (
               <tr 
+                key={table.id}
                 onClick={() => setSelectedTable(table)}
-                onDoubleClick={() => openTable(table._id)}
+                onDoubleClick={() => openTable(table.id)}
                 className={selectedTable === table ? "active table-list-item" : "table-list-item"}
-                key={table._id}
               >
                 <TableListItem selectedTable={selectedTable} table={table} />
               </tr>
@@ -70,10 +71,10 @@ const Lobby = (props) => {
         {selectedTable &&
           <section className='selected-table-info'>
             <h3>{selectedTable.name}</h3>
-            <h3>{selectedTable.type}</h3>
+            <h3>{`${selectedTable.stakes}/point ${selectedTable.type}`}</h3>
             <ul>
-              {selectedTable.seatedPlayers.map(player => (
-                <li key={player}>{`${player.username}   ${player.bank}`}</li>
+              {seatedPlayers && seatedPlayers.map(player => (
+                <li key={player}>{`${player.username}   ${player.tableBalance}`}</li>
               ))}
             </ul>
           </section>

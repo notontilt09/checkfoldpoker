@@ -95,28 +95,26 @@ const Table = (props) => {
       fetchTableInfo();
   
       props.socket.on('table-info', (res) => {
-        // console.log('new table info');
-        // console.log(res.table);
-        setTableInfo(res.table);
-        const filledSeats = [];
-        if (res.table.seatedPlayers.length) {
-          res.table.seatedPlayers.forEach(seat => filledSeats.push(seat.seat));
-        }
+        console.log(res);
+        setTableInfo(res.seated);
+        const filledSeats = res.seated.map(seat => seat.seatId);
+        console.log(filledSeats);
+
         setSeats(
           seats.map(seat => {
             if (filledSeats.includes(seat.seatId)) {
               return {
                 ...seat,
                 filled: true,
-                name: res.table.seatedPlayers.find(player => player.seat === seat.seatId).username,
-                bank: res.table.seatedPlayers.find(player => player.seat === seat.seatId).bank
+                name: res.seated.find(player => player.seatId === seat.seatId).username,
+                bank: res.seated.find(player => player.seatId === seat.seatId).tableBalance
               }
             } else {
               return seat
             }
           })
         );
-        setNumSeated(res.table.seatedPlayers.length);
+        setNumSeated(res.seated.length);
       });
 
       props.socket.on('deck', res => {
